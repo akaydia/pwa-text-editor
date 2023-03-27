@@ -11,7 +11,7 @@ module.exports = () => {
     mode: 'development',
     entry: {
       main: './src/js/index.js',
-      install: './src/js/install.js'
+      install: './src/js/install.js',
     },
     output: {
       filename: '[name].bundle.js',
@@ -22,10 +22,16 @@ module.exports = () => {
         title: 'JATE',
         template: './index.html',
       }),
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'sw.js',
+      }),
       new WebpackPwaManifest({
+        fingerprints: false,
+        inject: true,
         name: 'JATE',
         short_name: 'JATE',
-        description: 'JATE',
+        description: 'text editor',
         background_color: '#01579b',
         theme_color: '#ffffff',
         start_url: '/',
@@ -33,16 +39,12 @@ module.exports = () => {
           {
             src: path.resolve('src/images/logo.png'),
             sizes: [96, 128, 192, 256, 384, 512],
-            destination: path.join('icons'),
+            destination: path.join('assets', 'icons'),
           },
-    ],
-      }),
-      new InjectManifest({
-        swSrc: './src-sw.js',
-        swDest: 'sw.js',
+        ],
       }),
     ],
-    
+
     module: {
       rules: [
         {
@@ -56,6 +58,10 @@ module.exports = () => {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
+              plugins: [
+                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/transform-runtime',
+              ],
             },
           },
         },
